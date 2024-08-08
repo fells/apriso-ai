@@ -15,7 +15,7 @@ if __name__ == "__main__":
     model_name = "gpt2"
     tokenizer = GPT2Tokenizer.from_pretrained(model_name)
 
-    # Add a padding token to the tokenizer
+    # Add a padding token to the tokenizer if it doesn't have one
     if tokenizer.pad_token is None:
         tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
@@ -53,4 +53,8 @@ if __name__ == "__main__":
     )
 
     trainer.train()
-    trainer.save_model('../data/models/delmia_apriso_model')
+
+    # Save the model and tokenizer
+    model_dir = '../data/models/delmia_apriso_model'
+    trainer.save_model(model_dir)  # Saves the tokenizer too for compatible transformers versions
+    tokenizer.save_pretrained(model_dir)  # Ensure tokenizer files are saved
