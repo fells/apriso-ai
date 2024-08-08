@@ -22,8 +22,8 @@ def save_preprocessed(text, file_path):
         file.write(text)
 
 if __name__ == "__main__":
-    raw_data_dir = 'data/raw/'
-    processed_data_dir = 'data/processed/'
+    raw_data_dir = '../data/raw/'
+    processed_data_dir = '../data/processed/'
 
     os.makedirs(processed_data_dir, exist_ok=True)
 
