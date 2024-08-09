@@ -3,7 +3,7 @@ from transformers import GPT2Tokenizer, GPT2LMHeadModel
 
 app = FastAPI()
 
-model_dir = './data/models/delmia_apriso_model'
+model_dir = '../data/models/delmia_apriso_model'
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 model = GPT2LMHeadModel.from_pretrained(model_dir)
 
