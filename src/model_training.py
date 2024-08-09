@@ -1,15 +1,9 @@
-from transformers import GPT2Tokenizer, GPT2LMHeadModel, LineByLineTextDataset, DataCollatorForLanguageModeling, \
-    Trainer, TrainingArguments
+from transformers import GPT2Tokenizer, GPT2LMHeadModel, DataCollatorForLanguageModeling, Trainer, TrainingArguments
 import os
+import logging
+from datasets import load_dataset  # Use the Datasets library instead of LineByLineTextDataset
 
-
-def load_dataset(file_path, tokenizer):
-    return LineByLineTextDataset(
-        tokenizer=tokenizer,
-        file_path=file_path,
-        block_size=128
-    )
-
+logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
     model_name = "gpt2"
@@ -33,16 +27,28 @@ if __name__ == "__main__":
     if not train_files:
         raise ValueError("No training files found in the processed_data_dir. Ensure the directory contains .txt files.")
 
-    dataset = load_dataset(train_files[0], tokenizer)
+    # Load dataset using Datasets library
+    dataset = load_dataset('text', data_files=train_files)
+    dataset = dataset['train'].map(lambda e: tokenizer(e['text'], truncation=True, padding='max_length', max_length=128), batched=True)
+
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     training_args = TrainingArguments(
         output_dir='../data/models',
         overwrite_output_dir=True,
-        num_train_epochs=3,
-        per_device_train_batch_size=2,
+        num_train_epochs=5,  # Number of epochs
+        per_device_train_batch_size=4,  # Batch size that fits within 12GB VRAM
         save_steps=10_000,
         save_total_limit=2,
+        logging_dir='./logs',
+        logging_steps=500,
+        eval_strategy="steps",  # Changed from evaluation_strategy to eval_strategy
+        eval_steps=1000,
+        weight_decay=0.01,
+        learning_rate=5e-5,
+        fp16=True,  # Mixed precision for faster training
+        gradient_accumulation_steps=8,  # Accumulate gradients to simulate larger batch size
+        optim="adamw_torch",  # Use torch's AdamW for performance
     )
 
     trainer = Trainer(
@@ -57,4 +63,4 @@ if __name__ == "__main__":
     # Save the model and tokenizer
     model_dir = '../data/models/delmia_apriso_model'
     trainer.save_model(model_dir)  # Saves the tokenizer too for compatible transformers versions
-    tokenizer.save_pretrained(model_dir)  # Ensure tokenizer files are saved
+    tokenizer.save_pretrained(model_dir)

@@ -57,3 +57,24 @@ This project is a custom AI model trained on content related to Delmia Apriso, b
 
 ## Folder Structure
 
+```commandline
+    apriso-ai
+        data
+            models
+            processed
+            raw
+        src
+            api.py
+            data_collection.py
+            evaluation.py
+            model_training.py
+            preprocessing.py
+            utils.py
+        tests
+            tests.py
+        
+        .gitignore
+        README.md
+        requirements.txt
+```
+
