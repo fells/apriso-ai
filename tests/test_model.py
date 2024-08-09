@@ -5,7 +5,7 @@ class TestModel(unittest.TestCase):
 
     def setUp(self):
         self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-        self.model = GPT2LMHeadModel.from_pretrained('./data/models/delmia_apriso_model')
+        self.model = GPT2LMHeadModel.from_pretrained('../data/models/delmia_apriso_model')
 
     def test_generate(self):
         prompt = "What is Delmia Apriso?"

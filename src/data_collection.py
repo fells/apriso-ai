@@ -33,7 +33,7 @@ def save_data(text, file_name):
         file.write(text)
 
 if __name__ == "__main__":
-    sitemap_url = 'https://customgpt-streamlit.s3.amazonaws.com/customgpt-streamlit/6f851836-a1dc-420b-b47c-db0b808be882.xml'
+    sitemap_url = 'https://customgpt-streamlit.s3.amazonaws.com/customgpt-streamlit/6f851836-a1dc-420b-b47c-db0b808be882.xml'  #You're sitemap data inputs here
     sitemap_content = fetch_sitemap(sitemap_url)
     print("Sitemap fetched successfully.")
     urls = parse_sitemap(sitemap_content)
