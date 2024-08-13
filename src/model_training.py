@@ -1,7 +1,7 @@
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, DataCollatorForLanguageModeling, Trainer, TrainingArguments
 import os
 import logging
-from datasets import load_dataset  # Use the Datasets library instead of LineByLineTextDataset
+from datasets import load_dataset
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,8 +28,12 @@ if __name__ == "__main__":
         raise ValueError("No training files found in the processed_data_dir. Ensure the directory contains .txt files.")
 
     # Load dataset using Datasets library
-    dataset = load_dataset('text', data_files=train_files)
-    dataset = dataset['train'].map(lambda e: tokenizer(e['text'], truncation=True, padding='max_length', max_length=128), batched=True)
+    dataset = load_dataset('text', data_files={'train': train_files})
+    # Tokenize the dataset
+    def tokenize_function(examples):
+        return tokenizer(examples['text'], truncation=True, padding='max_length', max_length=128)
+
+    tokenized_dataset = dataset.map(tokenize_function, batched=True, remove_columns=["text"])
 
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
@@ -42,7 +46,7 @@ if __name__ == "__main__":
         save_total_limit=2,
         logging_dir='./logs',
         logging_steps=500,
-        eval_strategy="steps",  # Changed from evaluation_strategy to eval_strategy
+        eval_strategy="steps",  # Evaluate every `eval_steps`
         eval_steps=1000,
         weight_decay=0.01,
         learning_rate=5e-5,
@@ -55,12 +59,12 @@ if __name__ == "__main__":
         model=model,
         args=training_args,
         data_collator=data_collator,
-        train_dataset=dataset,
+        train_dataset=tokenized_dataset["train"],
     )
 
     trainer.train()
 
     # Save the model and tokenizer
     model_dir = '../data/models/delmia_apriso_model'
-    trainer.save_model(model_dir)  # Saves the tokenizer too for compatible transformers versions
+    trainer.save_model(model_dir)
     tokenizer.save_pretrained(model_dir)
