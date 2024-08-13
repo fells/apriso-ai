@@ -2,24 +2,36 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import os
+import string
 
 nltk.download('punkt')
 nltk.download('stopwords')
 
+
 def preprocess_text(text):
+    # Tokenize the text
     tokens = word_tokenize(text)
-    tokens = [word for word in tokens if word.isalpha()]
-    tokens = [word for word in tokens if word.lower() not in stopwords.words('english')]
+
+    # Retain tokens that are alphabetic or punctuation (like periods, commas)
+    tokens = [word for word in tokens if word.isalpha() or word in string.punctuation]
+
+    # Filter out stopwords, but retain important words and punctuation
+    tokens = [word for word in tokens if word.lower() not in stopwords.words('english') or word in string.punctuation]
+
+    # Rejoin the tokens into a single string
     return ' '.join(tokens)
+
 
 def load_and_preprocess(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         text = file.read()
     return preprocess_text(text)
 
+
 def save_preprocessed(text, file_path):
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)
+
 
 if __name__ == "__main__":
     raw_data_dir = '../data/raw/'

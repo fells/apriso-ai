@@ -36,7 +36,7 @@ if __name__ == "__main__":
     training_args = TrainingArguments(
         output_dir='../data/models',
         overwrite_output_dir=True,
-        num_train_epochs=5,  # Number of epochs
+        num_train_epochs=10,  # Number of epochs
         per_device_train_batch_size=4,  # Batch size that fits within 12GB VRAM
         save_steps=10_000,
         save_total_limit=2,
